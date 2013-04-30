@@ -1,3 +1,8 @@
+/*********************************/
+/*Arnaldo A Villarreal
+/*CSCE 221 -510
+/*Assignment 6, 04-30-2013
+/**********************************/
 #include "Item.h"
 //#include "PQueueVector.h"
 
@@ -45,9 +50,9 @@ public: // templated class BinaryHeap (cont)
 	ElemType *getArray(){ return array; }
 	void buildHeap();
 	void insert(const ElemType& x);
-	void removeMin() throw(EmptyHeap);
-	void walkDown(int hole);
-	void walkUp(const ElemType& x, int hole);
+	int removeMin() throw(EmptyHeap);
+	int walkDown(int hole);
+	int walkUp(const ElemType& x, int hole);
 	void checkSize() { if (curSize == length) getNewArray(length*2); }
 	void remove(int* location) throw(EmptyHeap);
 };
@@ -59,16 +64,17 @@ template<typename ElemType, typename Comp>void BinaryHeap<ElemType, Comp>::inser
 	array[curSize] = x;
 	*(array[curSize].loco) = curSize;
 
-	walkUp(x, curSize);
+	int comp = walkUp(x, curSize);
 	curSize++;
 }
 
-template<typename ElemType, typename Comp>void BinaryHeap<ElemType, Comp>::removeMin() throw(EmptyHeap) {
+template<typename ElemType, typename Comp>int BinaryHeap<ElemType, Comp>::removeMin() throw(EmptyHeap) {
 	array[0] = array[ --curSize ]; //decrease size
-	walkDown(0);
+	int comp = walkDown(0);
+	return comp;
 }
 
-template<typename ElemType, typename Comp>void BinaryHeap<ElemType, Comp>::walkDown(int hole) {
+template<typename ElemType, typename Comp>int BinaryHeap<ElemType, Comp>::walkDown(int hole) {
 	int child;
 	ElemType key = array[hole];
 	int compare = 0;
@@ -78,15 +84,18 @@ template<typename ElemType, typename Comp>void BinaryHeap<ElemType, Comp>::walkD
 		if (child != curSize-1 &&
 			comp(array[child], array[child+1]) > 0)
 			child++; // right child = 2*hole+2
-		if (comp(key, array[child]) > 0)
+		if (comp(key, array[child]) > 0){
 			array[hole]=array[child];
+			*(array[hole].loco) = hole;
+		}
 		else break;
 	}
 	array[hole] = key;
-	cout << "WalkDown operation completed, " << compare << " comparisons made" << endl;
+	//cout << "WalkDown operation completed, " << compare << " comparisons made" << endl;
+	return compare;
 }
 
-template <typename ElemType, typename Comp>void BinaryHeap<ElemType,Comp>::walkUp(const ElemType& x, int hole){
+template <typename ElemType, typename Comp>int BinaryHeap<ElemType,Comp>::walkUp(const ElemType& x, int hole){
 	int compare = 0;
 	for ( ; hole > 0 && (compare++,comp(array[(hole-1)/2], x) > 0); hole = (hole-1)/2){
 		array[hole] = array[(hole-1)/2];
@@ -94,7 +103,8 @@ template <typename ElemType, typename Comp>void BinaryHeap<ElemType,Comp>::walkU
 	}
 	array[hole] = x;
 	*(array[hole].loco) = hole;
-	cout << "WalkUp operation completed, " << compare << " comparisons made" << endl;
+	//cout << "WalkUp operation completed, " << compare << " comparisons made" << endl;
+	return compare;
 }
 
 template<typename ElemType, typename Comp>void BinaryHeap<ElemType, Comp>::remove(int* location) throw(EmptyHeap)

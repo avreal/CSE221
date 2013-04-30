@@ -1,8 +1,12 @@
+/*********************************/
+/*Arnaldo A Villarreal
+/*CSCE 221 -510
+/*Assignment 6, 04-30-2013
+/**********************************/
 #include "BinaryHeap.h"
 #include <string>
 #include <fstream>
 #include <cstdlib>
-
 
 using namespace std;
 
@@ -19,7 +23,7 @@ public: // class PriorityQueue cont.
 	PQueueHeap(int size = DEF_SIZE) : T(size) { }
 	bool isEmpty() const { return T.isEmpty(); }
 
-     int* min()
+	int* min()
 	{
 		return T.findMin().loco;
 	}
@@ -37,9 +41,10 @@ public: // class PriorityQueue cont.
 		if (T.isEmpty()) throw EmptyPriorityQueue();
 		return T.findMin().getKey();
 	}
-	void removeMin() throw(EmptyPriorityQueue) {
+	int removeMin() throw(EmptyPriorityQueue) {
 		if (T.isEmpty()) throw EmptyPriorityQueue();
-		T.removeMin();
+		int comp = T.removeMin();
+		return comp;
 	}
 
 	void remove(int* location) throw (EmptyPriorityQueue)
@@ -48,19 +53,24 @@ public: // class PriorityQueue cont.
 		T.remove(location);
 	}
 
-	void decreaseKey(const int* location, int k) 
+	int decreaseKey(const int* location, int k)
 	{
+		int comp1 = 0;
+		int comp2 = 0;
 		if (T.getArray()[*location].getKey() < k)
 		{
 			T.getArray()[*location].setKey(k);
-			T.walkDown(*location);
+			comp1 = T.walkDown(*location);
 		}
 		else
 		{
 			T.getArray()[*location].setKey(k);
 			Item i(k,T.getArray()[*location].getElem(), T.getArray()[*location].loco);
-			T.walkUp(i, *location);
+			comp2 = T.walkUp(i, *location);
 		}
+		//cout << "Key decreased, number of comparisons" << comp1+comp2 << endl;
+		int comps = comp1 + comp2;
+		return comps;
 	}
 
 	int size() {return T.size();}
